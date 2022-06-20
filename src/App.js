@@ -8,7 +8,7 @@ import './App.css';
 const App = () => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  let searchTerm = 'john';
+  const [searchTerm, setSearchTerm] = useState('john');
 
   useEffect(() => {
     (async () => {
@@ -16,7 +16,7 @@ const App = () => {
 
       setData([...data, ...newdata.data.Search]);
     })();
-  }, [currentPage]);
+  }, [searchTerm, currentPage]);
 
   useEffect(() => {
     document.addEventListener('scroll', handleScroll);
@@ -28,9 +28,21 @@ const App = () => {
     }
   };
 
+  const resetCurrentPage = () => {
+    setCurrentPage(1)
+  }
+
+  const handleSearchTermChange = (e) => {
+    setSearchTerm(e.target.value)
+    resetCurrentPage()
+  }
+
   return (
     <div className="App">
       <h1>Infinite Scroll!</h1>
+      Search Term:
+      <input type="text" value={searchTerm} defaultValue="john" alt="Search Term"/>
+      <button type="button" onClick={handleSearchTermChange}>New Search</button>
       <div id="scrollable" onScroll={handleScroll}>
         {data.map((movie, i) => (
           <Movie dataSource={movie} key={i} />
