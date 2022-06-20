@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { fetchMovies } from './util/fetchMovies';
 import Movie from './components/Movie';
@@ -13,8 +13,12 @@ const App = () => {
   useEffect(() => {
     (async () => {
       let newdata = await fetchMovies(searchTerm, currentPage);
-
-      setData([...data, ...newdata.data.Search]);
+      console.log(newdata)
+      if (newdata.data.Error) {
+        setData([])
+      } else {
+        setData([...data, ...newdata.data.Search]);
+      }
     })();
   }, [searchTerm, currentPage]);
 
@@ -28,27 +32,23 @@ const App = () => {
     }
   };
 
-  const resetCurrentPage = () => {
+  const searchTermChange = (e) => {
+    setData([])
+    setSearchTerm(e.target.value)
     setCurrentPage(1)
   }
 
-  const handleSearchTermChange = (e) => {
-    setSearchTerm(e.target.value)
-    resetCurrentPage()
-  }
-
   return (
-    <div className="App">
-      <h1>Infinite Scroll!</h1>
-      Search Term:
-      <input type="text" value={searchTerm} defaultValue="john" alt="Search Term"/>
-      <button type="button" onClick={handleSearchTermChange}>New Search</button>
-      <div id="scrollable" onScroll={handleScroll}>
-        {data.map((movie, i) => (
-          <Movie dataSource={movie} key={i} />
-        ))}
+      <div className="App">
+        <h1>Infinite Scroll!</h1>
+        Search Term:
+        <input type="text" onChange={searchTermChange} value={searchTerm} alt="Search Term"/>
+        <div id="scrollable" onScroll={handleScroll}>
+          {data.map((movie, i) => (
+              <Movie dataSource={movie} key={i} />
+          ))}
+        </div>
       </div>
-    </div>
   );
 };
 export default App;
